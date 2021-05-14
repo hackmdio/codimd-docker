@@ -3,13 +3,6 @@ FROM node:12.22.1-alpine@sha256:9923c9efb13cf7535f67e49b03010f0977a800068e4c8e0e
 FROM base AS basebuilder
 RUN apk update
 
-FROM basebuilder AS dockerize
-# Download and extract dockerize, used in resources/docker-entrypoint.sh
-ENV DOCKERIZE_VERSION=v0.6.1
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-RUN tar -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-RUN rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-
 
 FROM basebuilder AS builder
 # Build arguments to change source url, branch or tag
@@ -40,7 +33,6 @@ FROM base
 ARG UID=10000
 ENV NODE_ENV=production
 
-COPY --from=dockerize dockerize /usr/local/bin/
 COPY --chown=$UID --from=builder /hedgedoc /hedgedoc
 
 # Add configuraton files
