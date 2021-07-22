@@ -3,14 +3,6 @@ FROM node:16.5.0-slim@sha256:c4236688f1255d88994f5fb639108f756b107d27a0089f80c36
 FROM base AS basebuilder
 RUN apt-get update
 
-FROM basebuilder AS dockerize
-# Download and extract dockerize, used in resources/docker-entrypoint.sh
-ENV DOCKERIZE_VERSION=v0.6.1
-RUN apt-get install --no-install-recommends -y ca-certificates wget
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-RUN tar -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-RUN rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-
 
 FROM basebuilder AS builder
 # Build arguments to change source url, branch or tag
@@ -46,7 +38,6 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y fonts-noto gosu && \
     rm -r /var/lib/apt/lists/*
 
-COPY --from=dockerize dockerize /usr/local/bin/
 COPY --chown=$UID --from=builder /hedgedoc /hedgedoc
 
 # Add configuraton files
